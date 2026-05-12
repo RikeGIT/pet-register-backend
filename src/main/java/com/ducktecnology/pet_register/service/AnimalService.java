@@ -147,5 +147,8 @@ public class AnimalService {
                 animal.getTutor().getNome()
         );
     }
-
+    public Animal buscarEntidadePorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Animal não encontrado"));
+    }
 }

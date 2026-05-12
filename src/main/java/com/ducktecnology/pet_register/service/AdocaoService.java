@@ -8,6 +8,7 @@ import com.ducktecnology.pet_register.dto.adocao.AdocaoRequestDTO;
 import com.ducktecnology.pet_register.dto.adocao.AdocaoResponseDTO;
 import com.ducktecnology.pet_register.repository.AdocaoRepository;
 import com.ducktecnology.pet_register.repository.AnimalRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,21 @@ public class AdocaoService {
         return adocaoRepository.findByInteressado(usuarioLogado).stream()
                 .map(a -> new AdocaoResponseDTO(a.getId(), a.getAnimal().getId(), a.getAnimal().getNome(), a.getMensagem(), a.getStatus().name()))
                 .toList();
+    }
+    @Transactional
+    public void atualizarStatus(Long id, StatusSolicitacao novoStatus) {
+        Adocao adocao = adocaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Adoção não encontrada"));
+
+        adocao.setStatus(novoStatus);
+
+        // Se a adoção for aprovada, atualiza o status do animal
+        if (novoStatus == StatusSolicitacao.APROVADO) {
+            Animal animal = adocao.getAnimal();
+            animal.setStatusAdocao(com.ducktecnology.pet_register.domain.enums.StatusAdocao.EM_PROCESSO);
+            animalRepository.save(animal);
+        }
+
+        adocaoRepository.save(adocao);
     }
 }

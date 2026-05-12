@@ -68,11 +68,8 @@ public class AnimalController {
                 Files.createDirectories(uploadPath);
             }
             Files.copy(file.getInputStream(), uploadPath.resolve(fileName));
-
-            String fotoUrl = "http://localhost:8080/uploads/" + fileName; // URL fictícia para o front
-
-            Animal animal = service.buscarEntidadePorId(id); // Você precisará criar este método no AnimalService
-            animal.setFotoUrl(fotoUrl);
+            String fotoUrl = "http://localhost:8080/uploads/" + fileName;
+            service.atualizarFoto(id, fotoUrl);
 
             return ResponseEntity.ok(fotoUrl);
         } catch (Exception e) {

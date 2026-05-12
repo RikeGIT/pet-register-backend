@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/refresh",
                                 "/api/usuarios/**",
-                                "/api/public/**"
+                                "/api/public/**",
+                                "/uploads/**"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/animals/**")

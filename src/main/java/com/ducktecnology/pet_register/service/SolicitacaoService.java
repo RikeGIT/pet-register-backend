@@ -8,6 +8,7 @@ import com.ducktecnology.pet_register.dto.solicitacao.SolicitacaoRequestDTO;
 import com.ducktecnology.pet_register.dto.solicitacao.SolicitacaoResponseDTO;
 import com.ducktecnology.pet_register.repository.AnimalRepository;
 import com.ducktecnology.pet_register.repository.SolicitacaoRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -67,5 +68,12 @@ public class SolicitacaoService {
                 solicitacao.getStatus().name(),
                 solicitacao.getDataCriacao()
         );
+    }
+    @Transactional
+    public void atualizarStatus(Long id, StatusSolicitacao novoStatus) {
+        Solicitacao solicitacao = solicitacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
+        solicitacao.setStatus(novoStatus);
+        solicitacaoRepository.save(solicitacao);
     }
 }

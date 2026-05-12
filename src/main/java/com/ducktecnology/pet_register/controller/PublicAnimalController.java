@@ -21,10 +21,12 @@ public class PublicAnimalController {
     @GetMapping("/animals")
     public ResponseEntity<Page<PublicAnimalResponseDTO>> listarPublicos(
             @RequestParam(required = false) String especie,
+            @RequestParam(required = false) com.ducktecnology.pet_register.domain.enums.StatusAdocao status,
+            @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(service.listarPublicos(especie, PageRequest.of(page, size)));
+        return ResponseEntity.ok(service.listarPublicos(especie, status, search, PageRequest.of(page, size)));
     }
 
     @GetMapping("/featured-animals")

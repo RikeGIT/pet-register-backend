@@ -9,6 +9,11 @@ public record AnimalResponseDTO(
         Double peso,
         String observacoes,
         Long tutorId,
-        String tutorNome
+        String tutorNome,
+        String fotoUrl,
+        String descricaoPublica,
+        boolean publico,
+        boolean destaque,
+        com.ducktecnology.pet_register.domain.enums.StatusAdocao statusAdocao
 ) {
 }

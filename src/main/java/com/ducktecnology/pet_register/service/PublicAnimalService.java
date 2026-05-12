@@ -18,15 +18,8 @@ public class PublicAnimalService {
 
     private final AnimalRepository repository;
 
-    public Page<PublicAnimalResponseDTO> listarPublicos(String especie, Pageable pageable) {
-        Page<Animal> animais;
-
-        if (especie != null && !especie.isBlank()) {
-            animais = repository.findByPublicoTrueAndStatusAdocaoAndEspecie(StatusAdocao.DISPONIVEL, especie, pageable);
-        } else {
-            animais = repository.findByPublicoTrueAndStatusAdocao(StatusAdocao.DISPONIVEL, pageable);
-        }
-
+    public Page<PublicAnimalResponseDTO> listarPublicos(String especie, StatusAdocao status, String search, Pageable pageable) {
+        Page<Animal> animais = repository.findVitrine(especie, status, search, pageable);
         return animais.map(this::toPublicResponse);
     }
 

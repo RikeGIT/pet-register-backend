@@ -8,7 +8,19 @@ import com.ducktecnology.pet_register.domain.enums.StatusAdocao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 public interface AnimalRepository extends JpaRepository<Animal, Long> {
+    @Query("SELECT a FROM Animal a WHERE a.publico = true " +
+            "AND (:especie IS NULL OR a.especie = :especie) " +
+            "AND (:status IS NULL OR a.statusAdocao = :status) " +
+            "AND (:search IS NULL OR LOWER(a.nome) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Animal> findVitrine(@Param("especie") String especie,
+                             @Param("status") StatusAdocao status,
+                             @Param("search") String search,
+                             Pageable pageable);
+
     List<Animal> findByTutor(Usuario tutor);
 
     // Consultas para a Vitrine Pública

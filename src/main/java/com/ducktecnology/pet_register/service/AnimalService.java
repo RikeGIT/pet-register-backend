@@ -59,6 +59,11 @@ public class AnimalService {
                 .tutor(usuario)
                 .criadoPor(usuario)
                 .criadoEm(Instant.now())
+                .fotoUrl(dto.fotoUrl())
+                .descricaoPublica(dto.descricaoPublica())
+                .publico(dto.publico())
+                .destaque(dto.destaque())
+                .statusAdocao(dto.statusAdocao())
                 .build();
 
         repository.save(animal);
@@ -113,6 +118,11 @@ public class AnimalService {
         animal.setIdade(dto.idade());
         animal.setPeso(dto.peso());
         animal.setObservacoes(dto.observacoes());
+        animal.setFotoUrl(dto.fotoUrl());
+        animal.setDescricaoPublica(dto.descricaoPublica());
+        animal.setPublico(dto.publico());
+        animal.setDestaque(dto.destaque());
+        animal.setStatusAdocao(dto.statusAdocao());
 
         repository.save(animal);
 
@@ -144,11 +154,22 @@ public class AnimalService {
                 animal.getPeso(),
                 animal.getObservacoes(),
                 animal.getTutor().getId(),
-                animal.getTutor().getNome()
+                animal.getTutor().getNome(),
+                animal.getFotoUrl(),
+                animal.getDescricaoPublica(),
+                animal.isPublico(),
+                animal.isDestaque(),
+                animal.getStatusAdocao()
         );
     }
     public Animal buscarEntidadePorId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Animal não encontrado"));
+    }
+    @Transactional
+    public void atualizarFoto(Long id, String fotoUrl) {
+        Animal animal = buscarEntidadePorId(id);
+        animal.setFotoUrl(fotoUrl);
+        repository.save(animal);
     }
 }

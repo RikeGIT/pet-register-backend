@@ -29,4 +29,7 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Perfil perfil;
+
+    @Column(length = 20)
+    private String telefone;
 }

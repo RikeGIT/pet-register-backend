@@ -89,15 +89,15 @@ public class AuthService {
     }
 
     public MeResponseDTO me() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuario = (Usuario) authentication.getPrincipal();
 
         return new MeResponseDTO(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
+                usuario.getCpf(),
+                usuario.getTelefone(),
                 usuario.getPerfil()
         );
     }

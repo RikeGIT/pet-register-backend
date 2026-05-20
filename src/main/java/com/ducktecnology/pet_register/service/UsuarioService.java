@@ -17,16 +17,32 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     public Usuario criar(UsuarioRequestDTO dto) {
-
         String senhaCriptografada = passwordEncoder.encode(dto.senha());
 
         Usuario usuario = Usuario.builder()
                 .nome(dto.nome())
                 .email(dto.email())
                 .cpf(dto.cpf())
+                .telefone(dto.telefone())
                 .senha(senhaCriptografada)
                 .perfil(dto.perfil())
                 .build();
+
+        return repository.save(usuario);
+    }
+
+    public Usuario atualizar(Long id, UsuarioRequestDTO dto) {
+        Usuario usuario = buscarPorId(id);
+
+        usuario.setNome(dto.nome());
+        usuario.setEmail(dto.email());
+        usuario.setCpf(dto.cpf());
+        usuario.setTelefone(dto.telefone());
+        usuario.setPerfil(dto.perfil());
+
+        if (dto.senha() != null && !dto.senha().isBlank()) {
+            usuario.setSenha(passwordEncoder.encode(dto.senha()));
+        }
 
         return repository.save(usuario);
     }
@@ -39,22 +55,6 @@ public class UsuarioService {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
-
-    public Usuario atualizar(Long id, UsuarioRequestDTO dto) {
-        Usuario usuario = buscarPorId(id);
-        if (dto.senha() != null && !dto.senha().isBlank()) {
-            usuario.setSenha(passwordEncoder.encode(dto.senha()));
-        }
-
-        usuario.setNome(dto.nome());
-        usuario.setEmail(dto.email());
-        usuario.setCpf(dto.cpf());
-        usuario.setSenha(dto.senha());
-        usuario.setPerfil(dto.perfil());
-
-        return repository.save(usuario);
-    }
-
     public void deletar(Long id) {
         repository.deleteById(id);
     }

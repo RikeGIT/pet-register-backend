@@ -27,6 +27,11 @@ public class AdocaoController {
         return ResponseEntity.ok(service.listarMinhas());
     }
 
+    @GetMapping
+    public ResponseEntity<List<AdocaoResponseDTO>> listarTodas() {
+        return ResponseEntity.ok(service.listarTodas());
+    }
+
     // Endpoint de Moderação (ex: PATCH /api/adocoes/1/status?status=APROVADO)
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> atualizarStatus(

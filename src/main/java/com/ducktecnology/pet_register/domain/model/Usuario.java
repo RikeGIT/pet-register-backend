@@ -32,4 +32,8 @@ public class Usuario {
 
     @Column(length = 20)
     private String telefone;
+
+    @Column
+    @Builder.Default
+    private Boolean ativo = true;
 }

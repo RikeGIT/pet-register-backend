@@ -1,8 +1,8 @@
 package com.ducktecnology.pet_register.service;
 
-import com.ducktecnology.pet_register.domain.enums.StatusAdocao;
 import com.ducktecnology.pet_register.domain.model.Animal;
 import com.ducktecnology.pet_register.dto.animal.PublicAnimalResponseDTO;
+import com.ducktecnology.pet_register.domain.enums.StatusAdocao;
 import com.ducktecnology.pet_register.repository.AnimalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,11 +31,32 @@ public class PublicAnimalService {
     }
 
     private PublicAnimalResponseDTO toPublicResponse(Animal animal) {
+        String tutorNome = null;
+        String tutorTelefone = null;
+        String tutorEmail = null;
+        String tutorEndereco = null;
+
+        if (animal.getTutor() != null) {
+            tutorNome = animal.getTutor().getNome();
+            tutorTelefone = animal.getTutor().getTelefone();
+            tutorEmail = animal.getTutor().getEmail();
+        }
+
         return new PublicAnimalResponseDTO(
-                animal.getId(), animal.getNome(), animal.getEspecie(),
-                animal.getRaca(), animal.getIdade(), animal.getPeso(),
-                animal.getFotoUrl(), animal.getDescricaoPublica(),
-                animal.getStatusAdocao(), animal.isDestaque()
+                animal.getId(),
+                animal.getNome(),
+                animal.getEspecie(),
+                animal.getRaca(),
+                animal.getIdade(),
+                animal.getPeso(),
+                animal.getFotoUrl(),
+                animal.getDescricaoPublica(),
+                animal.getStatusAdocao(),
+                animal.isDestaque(),
+                tutorNome,
+                tutorTelefone,
+                tutorEmail,
+                tutorEndereco
         );
     }
 }

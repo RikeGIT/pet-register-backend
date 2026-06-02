@@ -2,10 +2,14 @@ package com.ducktecnology.pet_register.service;
 
 import com.ducktecnology.pet_register.domain.enums.Perfil;
 import com.ducktecnology.pet_register.domain.model.Animal;
+import com.ducktecnology.pet_register.domain.model.Especie;
+import com.ducktecnology.pet_register.domain.model.Raca;
 import com.ducktecnology.pet_register.domain.model.Usuario;
 import com.ducktecnology.pet_register.dto.animal.AnimalRequestDTO;
 import com.ducktecnology.pet_register.dto.animal.AnimalResponseDTO;
 import com.ducktecnology.pet_register.repository.AnimalRepository;
+import com.ducktecnology.pet_register.repository.EspecieRepository;
+import com.ducktecnology.pet_register.repository.RacaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -19,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimalService {
     private final AnimalRepository repository;
+    private final EspecieRepository especieRepository;
+    private final RacaRepository racaRepository;
     private Usuario usuarioLogado() {
 
         Authentication authentication =
@@ -48,11 +54,12 @@ public class AnimalService {
     public AnimalResponseDTO criar(AnimalRequestDTO dto) {
 
         Usuario usuario = usuarioLogado();
+        TaxonomiaNormalizada taxonomia = validarTaxonomia(dto.especie(), dto.raca());
 
         Animal animal = Animal.builder()
                 .nome(dto.nome())
-                .especie(dto.especie())
-                .raca(dto.raca())
+            .especie(taxonomia.especie())
+            .raca(taxonomia.raca())
                 .idade(dto.idade())
                 .peso(dto.peso())
                 .observacoes(dto.observacoes())
@@ -111,10 +118,11 @@ public class AnimalService {
                         new RuntimeException("Animal não encontrado"));
 
         validarPermissao(usuario, animal);
+        TaxonomiaNormalizada taxonomia = validarTaxonomia(dto.especie(), dto.raca());
 
         animal.setNome(dto.nome());
-        animal.setEspecie(dto.especie());
-        animal.setRaca(dto.raca());
+        animal.setEspecie(taxonomia.especie());
+        animal.setRaca(taxonomia.raca());
         animal.setIdade(dto.idade());
         animal.setPeso(dto.peso());
         animal.setObservacoes(dto.observacoes());
@@ -172,4 +180,24 @@ public class AnimalService {
         animal.setFotoUrl(fotoUrl);
         repository.save(animal);
     }
+
+    private TaxonomiaNormalizada validarTaxonomia(String especieNome, String racaNome) {
+        if (especieNome == null || especieNome.isBlank()) {
+            throw new RuntimeException("Especie e obrigatoria");
+        }
+
+        Especie especie = especieRepository.findByNomeIgnoreCaseAndAtivoTrue(especieNome.trim())
+                .orElseThrow(() -> new RuntimeException("Especie invalida ou inativa"));
+
+        if (racaNome == null || racaNome.isBlank()) {
+            return new TaxonomiaNormalizada(especie.getNome(), null);
+        }
+
+        Raca raca = racaRepository.findByNomeIgnoreCaseAndEspecieIdAndAtivoTrue(racaNome.trim(), especie.getId())
+                .orElseThrow(() -> new RuntimeException("Raca invalida para a especie informada"));
+
+        return new TaxonomiaNormalizada(especie.getNome(), raca.getNome());
+    }
+
+    private record TaxonomiaNormalizada(String especie, String raca) {}
 }

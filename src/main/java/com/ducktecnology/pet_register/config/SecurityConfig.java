@@ -36,13 +36,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(
-                                "/api/auth/login",
-                                "/api/auth/refresh",
-                                "/api/usuarios/**",
-                                "/api/public/**",
-                                "/uploads/**"
-                        ).permitAll()
+                    .requestMatchers(
+                        "/api/auth/login",
+                        "/api/auth/otp/**",
+                        "/api/auth/refresh",
+                        "/api/public/**",
+                        "/uploads/**"
+                    ).permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios")
+                        .permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/animals/**")
                         .authenticated()

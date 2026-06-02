@@ -1,5 +1,6 @@
 package com.ducktecnology.pet_register.service;
 
+import com.ducktecnology.pet_register.domain.enums.Perfil;
 import com.ducktecnology.pet_register.domain.enums.StatusSolicitacao;
 import com.ducktecnology.pet_register.domain.model.Adocao;
 import com.ducktecnology.pet_register.domain.model.Animal;
@@ -10,6 +11,7 @@ import com.ducktecnology.pet_register.repository.AdocaoRepository;
 import com.ducktecnology.pet_register.repository.AnimalRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +24,21 @@ public class AdocaoService {
     private final AdocaoRepository adocaoRepository;
     private final AnimalRepository animalRepository;
 
+    private Usuario usuarioLogado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (Usuario) authentication.getPrincipal();
+    }
+
+    private void validarAcessoModeracao(Usuario usuario) {
+        if (usuario.getPerfil() == Perfil.ADMIN || usuario.getPerfil() == Perfil.VETERINARIO) {
+            return;
+        }
+
+        throw new RuntimeException("Sem permissão para moderar adoções");
+    }
+
     public AdocaoResponseDTO criar(AdocaoRequestDTO dto) {
-        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuarioLogado = usuarioLogado();
         Animal animal = animalRepository.findById(dto.animalId())
                 .orElseThrow(() -> new RuntimeException("Animal não encontrado"));
 
@@ -40,13 +55,26 @@ public class AdocaoService {
     }
 
     public List<AdocaoResponseDTO> listarMinhas() {
-        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuarioLogado = usuarioLogado();
         return adocaoRepository.findByInteressado(usuarioLogado).stream()
                 .map(a -> new AdocaoResponseDTO(a.getId(), a.getAnimal().getId(), a.getAnimal().getNome(), a.getMensagem(), a.getStatus().name()))
                 .toList();
     }
+
+    public List<AdocaoResponseDTO> listarTodas() {
+        Usuario usuarioLogado = usuarioLogado();
+        validarAcessoModeracao(usuarioLogado);
+
+        return adocaoRepository.findAll().stream()
+                .map(a -> new AdocaoResponseDTO(a.getId(), a.getAnimal().getId(), a.getAnimal().getNome(), a.getMensagem(), a.getStatus().name()))
+                .toList();
+    }
+
     @Transactional
     public void atualizarStatus(Long id, StatusSolicitacao novoStatus) {
+        Usuario usuarioLogado = usuarioLogado();
+        validarAcessoModeracao(usuarioLogado);
+
         Adocao adocao = adocaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Adoção não encontrada"));
 

@@ -29,4 +29,8 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
     Page<Animal> findByPublicoTrueAndStatusAdocaoAndEspecie(StatusAdocao status, String especie, Pageable pageable);
 
     List<Animal> findByPublicoTrueAndDestaqueTrue();
+
+    boolean existsByEspecieIgnoreCase(String especie);
+
+    boolean existsByEspecieIgnoreCaseAndRacaIgnoreCase(String especie, String raca);
 }

@@ -12,5 +12,9 @@ public record PublicAnimalResponseDTO(
         String fotoUrl,
         String descricaoPublica,
         StatusAdocao statusAdocao,
-        boolean destaque
+        boolean destaque,
+        String tutorNome,
+        String tutorTelefone,
+        String tutorEmail,
+        String tutorEndereco
 ) {}

@@ -13,4 +13,7 @@ public class Servico {
     private String descricao;
     private Double preco;
     private Integer duracaoMinutos;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
 }
